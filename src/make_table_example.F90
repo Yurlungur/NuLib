@@ -31,7 +31,7 @@ program make_table_example
   integer :: number_output_species = 3
 
   !number of energy groups
-  integer :: mytable_number_groups = 18
+  integer :: mytable_number_groups = 61
 
   !NuLib parameters file (weak rates and EOS)
   character*200 :: parameters_filename = "./parameters"
@@ -132,20 +132,20 @@ program make_table_example
   adhoc_nux_factor = 0.0d0 !increase for adhoc nux heating (also set
                            !add_nux_absorption_on_n_and_p to true)
   !set up table
-  final_table_size_ye = 51
-  final_table_size_rho = 82
-  final_table_size_temp = 65
+  final_table_size_ye = 40
+  final_table_size_rho = 58
+  final_table_size_temp = 62
   
-  final_Itable_size_temp = 65
-  final_Itable_size_eta = 61
+  final_Itable_size_temp = 10
+  final_Itable_size_eta = 10
   final_Itable_size_inE = mytable_number_groups
 
   min_ye = 0.035d0
-  max_ye = 0.55d0
-  min_logrho = 6.0d0
-  max_logrho = 15.5d0
-  min_logtemp = log10(0.05d0)
-  max_logtemp = log10(150.0d0)
+  max_ye = 0.56d0
+  min_logrho = 5.0d0
+  max_logrho = 14.0d0
+  min_logtemp = -1.1d0
+  max_logtemp = 1.6d0
   Imin_logtemp = log10(0.05d0)
   Imax_logtemp = log10(150.0d0)
   Imin_logeta = log10(0.1d0)
@@ -154,10 +154,10 @@ program make_table_example
   !set up energies bins
   do_integrated_BB_and_emissivity = .false.
   mindx = 2.0d0
-  bin_bottom(1) = 0.0d0 !MeV
+  bin_bottom(1) = 1.0d0 !MeV
   bin_bottom(2) = 2.0d0 !MeV
   bin_bottom(3) = bin_bottom(2)+mindx
-  bin_bottom(number_groups) = 250.0d0
+  bin_bottom(number_groups) = 100.0d0
 
 #ifdef __MPI__
   !set up mpi arrays
