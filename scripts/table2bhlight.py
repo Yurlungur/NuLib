@@ -50,4 +50,21 @@ if __name__ == "__main__":
         fout.create_dataset('lnu', data=lnu)
         fout.create_dataset('lrho', data=lrho)
         fout.create_dataset('opac', data=opac_new)
+
+        dims = fout.create_group('dimensions')
+        dims.attrs["numNu"] = len(lnu)
+        dims.attrs['numRadTypes'] = emis_new.shape[3]
+        dims.attrs['numRho'] = len(lrho)
+        dims.attrs['numT'] = len(lT)
+        dims.attrs['numYe'] = len(Ye)
+        dims.attrs['index order'] = "rho,T,Ye,type,nu"
+
+        units = fout.create_group("units")
+        units.attrs['Ye'] = "N/A"
+        units.attrs['density'] = "log_{10}(g/cm^3)"
+        units.attrs['emissivity'] = "cgs"
+        units.attrs['frequency'] = 'ln(Hz)'
+        units.attrs['opacity'] = '1/cm'
+        units.attrs['temperature'] = 'log_{10}(MeV)'
+
     print("Done")
