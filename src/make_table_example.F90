@@ -21,14 +21,14 @@ program make_table_example
   ! species #1: electron neutrino             #2 electron antineutrino
   !         #3: muon neutrino                 #4 mu antineutrino
   !         #5: tau neutrino                  #6 tau antineutrino
-  integer :: mytable_neutrino_scheme = 1
+  integer :: mytable_neutrino_scheme = 2
 
   !number of species for nulib to calculation interactions for, must
   !be six currently, average is done via above parameter
   integer :: mytable_number_species = 6
 
   !number of species to output, must match comments above
-  integer :: number_output_species = 3
+  integer :: number_output_species = 4
 
   !number of energy groups
   integer :: mytable_number_groups = 61
@@ -135,8 +135,8 @@ program make_table_example
   adhoc_nux_factor = 0.0d0 !increase for adhoc nux heating (also set
                            !add_nux_absorption_on_n_and_p to true)
   !set up table
-  final_table_size_ye = 40
-  final_table_size_rho = 58
+  final_table_size_ye = 50
+  final_table_size_rho = 70
   final_table_size_temp = 62
   
   final_Itable_size_temp = 10
@@ -145,10 +145,10 @@ program make_table_example
 
   min_ye = 0.035d0
   max_ye = 0.56d0
-  min_logrho = 5.0d0
-  max_logrho = 14.0d0
-  min_logtemp = -1.1d0
-  max_logtemp = 1.6d0
+  min_logrho = 2.22025
+  max_logrho = 15.5002
+  min_logtemp = -1
+  max_logtemp = 1.6
   Imin_logtemp = log10(0.05d0)
   Imax_logtemp = log10(150.0d0)
   Imin_logeta = log10(0.1d0)
