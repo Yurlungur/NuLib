@@ -42,6 +42,13 @@ if __name__ == "__main__":
     emis_new = HPL*np.moveaxis(emis,[0,1],[4,3])/MEV
     opac_new = np.moveaxis(opac,[0,1],[4,3])
 
+    YE, LT, LRHO, LNU = np.meshgrid(Ye, lT, lrho, lnu, indexing='ij')
+    mask = LT < 10.**(-0.5)
+    enuxb = emis_new[...,-1,:]
+    enueb = emis_new[...,1,:]
+    enueb[mask] = np.minimum(enuxb[mask], enueb[mask])
+    emis_new[...,1,:] = enueb
+
     print("Writing {}...".format(outfile))
     with h5py.File(outfile, 'w') as fout:
         fout.create_dataset('Ye', data=Ye)
