@@ -21,17 +21,17 @@ program make_table_example
   ! species #1: electron neutrino             #2 electron antineutrino
   !         #3: muon neutrino                 #4 mu antineutrino
   !         #5: tau neutrino                  #6 tau antineutrino
-  integer :: mytable_neutrino_scheme = 1
+  integer :: mytable_neutrino_scheme = 2
 
   !number of species for nulib to calculation interactions for, must
   !be six currently, average is done via above parameter
   integer :: mytable_number_species = 6
 
   !number of species to output, must match comments above
-  integer :: number_output_species = 3
+  integer :: number_output_species = 4
 
   !number of energy groups
-  integer :: mytable_number_groups = 18
+  integer :: mytable_number_groups = 61
 
   !NuLib parameters file (weak rates and EOS)
   character*200 :: parameters_filename = "./parameters"
@@ -42,6 +42,9 @@ program make_table_example
   real*8  :: min_logrho,max_logrho
   real*8  :: min_logtemp,max_logtemp
   real*8  :: min_ye,max_ye
+  real*8  :: min_e, max_e
+  real*8  :: min_lne, max_lne
+  real*8  :: dlne
 
   character*512 :: finaltable_filename
   real*8, allocatable,dimension(:) :: table_rho
@@ -132,32 +135,34 @@ program make_table_example
   adhoc_nux_factor = 0.0d0 !increase for adhoc nux heating (also set
                            !add_nux_absorption_on_n_and_p to true)
   !set up table
-  final_table_size_ye = 51
-  final_table_size_rho = 82
-  final_table_size_temp = 65
+  final_table_size_ye = 50
+  final_table_size_rho = 70
+  final_table_size_temp = 62
   
-  final_Itable_size_temp = 65
-  final_Itable_size_eta = 61
+  final_Itable_size_temp = 10
+  final_Itable_size_eta = 10
   final_Itable_size_inE = mytable_number_groups
 
   min_ye = 0.035d0
-  max_ye = 0.55d0
-  min_logrho = 6.0d0
-  max_logrho = 15.5d0
-  min_logtemp = log10(0.05d0)
-  max_logtemp = log10(150.0d0)
+  max_ye = 0.56d0
+  min_logrho = 2.22025
+  max_logrho = 15.5002
+  min_logtemp = -1
+  max_logtemp = 1.6
   Imin_logtemp = log10(0.05d0)
   Imax_logtemp = log10(150.0d0)
   Imin_logeta = log10(0.1d0)
   Imax_logeta = log10(100.0d0)
 
+  ! energy grid
+  min_e = 1.0d0 ! MeV
+  max_e = 320.0d0 ! MeV
+  min_lne = log(min_e)
+  max_lne = log(max_e)
+  dlne = (max_lne - min_lne) / (mytable_number_groups-1)
+  
   !set up energies bins
   do_integrated_BB_and_emissivity = .false.
-  mindx = 2.0d0
-  bin_bottom(1) = 0.0d0 !MeV
-  bin_bottom(2) = 2.0d0 !MeV
-  bin_bottom(3) = bin_bottom(2)+mindx
-  bin_bottom(number_groups) = 250.0d0
 
 #ifdef __MPI__
   !set up mpi arrays
@@ -188,20 +193,16 @@ program make_table_example
 #endif
   
   call nulib_series2(number_groups-1,bin_bottom(2),bin_bottom(number_groups),mindx,dxfac)
-  do i=4,number_groups
-     bin_bottom(i) = bin_bottom(i-1)+(bin_bottom(i-1)-bin_bottom(i-2))*dxfac
+  do i=1,number_groups
+     energies(i) = exp(min_lne + (i-1)*dlne)
+     bin_bottom(i) = exp(min_lne - 0.5*dlne + (i-1)*dlne)
+     bin_top(i) = exp(min_lne + 0.5*dlne + (i-1)*dlne)
   enddo
   
   !calculate bin widths & energies from the bottom of the bin & energy at top on bin
-  do i=1,number_groups-1
-     energies(i) = (bin_bottom(i)+bin_bottom(i+1))/2.0d0
-     bin_widths(i) = bin_bottom(i+1)-bin_bottom(i)
-     bin_top(i) = bin_bottom(i+1)
+  do i=1,number_groups
+     bin_widths(i) = bin_top(i)-bin_bottom(i)
   enddo
-  energies(number_groups) = bin_bottom(number_groups)+bin_widths(number_groups-1)*dxfac/2.0d0
-  bin_widths(number_groups) = 2.0*(energies(number_groups)-bin_bottom(number_groups))
-  bin_top(number_groups) = bin_bottom(number_groups)+bin_widths(number_groups)
-
 
   allocate(table_ye(final_table_size_ye))
   allocate(table_rho(final_table_size_rho))
